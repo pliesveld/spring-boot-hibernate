@@ -1,23 +1,18 @@
-plugins {
-	id 'org.springframework.boot' version '1.5.3.RELEASE'
-}
-
 apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'eclipse'
+
 apply plugin: 'org.springframework.boot'
 
-bootRepackage {
-	mainClass = 'hello.Application'
-}
-
 bootRun {
+    main = 'hello.Application'
 	jvmArgs = [
 	"-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005",
 	]
 }
 
-task fatjar(type: BootRepackage, dependsOn: jar) {
-	executable = true
+bootJar {
+    enabled = true
 }
 
 jar {
@@ -25,14 +20,10 @@ jar {
 	version = '0.0.1-SNAPSHOT'
 }
 
+
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
-repositories {
-	mavenCentral()
-	maven { url { "https://repo.spring.io/milestone" } }
-	maven { url { "https://repo.spring.io/snapshot" } }
-}
 
 configurations {
     resolutionStrategy {
@@ -51,15 +42,24 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-log4j2')
     compile('org.springframework.boot:spring-boot-starter-aop')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-starter-validation")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-devtools")
+    compile('org.springframework.boot:spring-boot-starter-json')
+    compile('org.projectlombok:lombok')
     compile("com.h2database:h2")
- 
+
 	compile 'org.slf4j:slf4j-api:1.7.21'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.0.0.M7'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile group: 'javax.inject', name: 'javax.inject', version: '1'
-	testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
     testCompile 'pl.pragmatists:JUnitParams:1.1.0'
 }
 

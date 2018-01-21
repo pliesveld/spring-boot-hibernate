@@ -1,5 +1,6 @@
 *.swp
 .gradle
+gradlew.bat
 .idea
 .classpath
 .project
@@ -12,3 +13,4 @@ out
 .settings/
 bin/
 classes/
+

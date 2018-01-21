@@ -11,7 +11,7 @@
         <Property name="springdebug">spring-debug.log</Property>
         <Property name="springweb">spring-web.log</Property>
 
-        <Property name="LOG_APP_LEVEL">INFO</Property>
+        <Property name="LOG_APP_LEVEL">ALL</Property>
         <Property name="LOG_JDBC_LEVEL">WARN</Property>
         <Property name="LOG_SQL_LEVEL">DEBUG</Property>
         <Property name="LOG_ENTITY_LEVEL">DEBUG</Property>
@@ -21,7 +21,6 @@
 
         <Property name="LOG_MVC_LEVEL">WARN</Property>
         <Property name="LOG_SECURITY_LEVEL">WARN</Property>
-        <Property name="LOG_APP_LEVEL">WARN</Property>
         <Property name="LOG_AUDIT_LEVEL">WARN</Property>
 
         <Property name="LOG_SPRING_LEVEL">WARN</Property>
