@@ -1,4 +1,4 @@
-package hello.book;
+package hello.associations.book.v2;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 
 import hello.BaseDataLoader;
-import hello.book.model.Author;
-import hello.book.model.Book;
-import hello.book.repository.AuthorRepository;
-import hello.book.repository.BookRepository;
+import hello.BaseTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -31,7 +28,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(classes = BookConfig.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DataJpaTest(showSql = false)
 @Import({BookDataLoader.class})
-public class BookTest {
+public class BookTest extends BaseTest {
 
     final static private Logger LOG = LogManager.getLogger();
 
@@ -51,6 +48,7 @@ public class BookTest {
         assertNotNull(entityManager);
         assertNotNull(bookRepository);
         assertNotNull(authorRepository);
+        assertNotNull(loadEventListener);
     }
 
     @Test
@@ -59,7 +57,7 @@ public class BookTest {
 
         Author author = authorRepository.findAll().iterator().next();
         Book book = bookRepository.findAll().iterator().next();
-        book.getAuthors().add(author);
+        author.setBook(book);
         entityManager.persist(book);
 
     }
@@ -71,8 +69,9 @@ public class BookTest {
         assertNotNull(author);
         assertThat(author.getName(),containsString("Second"));
         Book book = bookRepository.findAll().iterator().next();
-        book.getAuthors().add(author);
+        author.setBook(book);
         entityManager.persist(book);
+        loadEventListener.printAllLoadCounts();
     }
 
     @Test
@@ -80,8 +79,19 @@ public class BookTest {
         Author author = entityManager.getEntityManager().getReference(Author.class, (long)2);
         Book book = bookRepository.findById((long)1).get();
         assertNotNull(book);
-        book.getAuthors().add(author);
+        author.setBook(book);
     }
+
+    @Test
+    public void getBooksContainingTwoAuthors() throws Exception {
+        this.addNewAuthorToexistingBook();
+        entityManager.flush();
+        assertThat(bookRepository.count(), comparesEqualTo((long)1));
+        assertThat(authorRepository.count(), comparesEqualTo((long)2));
+    }
+
+
+
 }
 
 
@@ -97,14 +107,14 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        Author author = new Author();
-        author.setName("theFirstAuthor");
-        authorRepository.save(author);
-
         Book book = new Book();
         book.setTitle("a SAMPLEBOOK");
-        book.setAuthors(Collections.singleton(author));
-        bookRepository.save(book);
+        book = bookRepository.save(book);
+
+        Author author = new Author();
+        author.setName("theFirstAuthor");
+        author.setBook(book);
+        authorRepository.save(author);
 
         Author author2 = new Author();
         author2.setName("theSecondAuthor");

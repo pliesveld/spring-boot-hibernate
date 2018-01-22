@@ -1,4 +1,4 @@
-package hello.book.model;
+package hello.associations.book.v2;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +12,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-public class Author {
+class Book {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -20,6 +20,8 @@ public class Author {
 
     @NotNull
     @NotBlank
-    @Size(min = 1, max = 50)
-    private String name;
+    @Size(min = 1, max = 100)
+    private String title;
+
+
 }

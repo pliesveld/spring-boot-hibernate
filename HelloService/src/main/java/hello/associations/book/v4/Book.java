@@ -1,5 +1,6 @@
-package hello.book.model;
+package hello.associations.book.v4;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -9,6 +10,8 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,10 +21,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-public class Book {
+class Book {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "BOOK_ID")
     private Long id;
 
     @NotNull
@@ -30,10 +34,6 @@ public class Book {
     private String title;
 
     @OneToMany
-    @JoinTable(
-            name = "BOOK_AUTHOR",
-            joinColumns = @JoinColumn(name = "BOOK_ID", referencedColumnName = "ID"),
-            inverseJoinColumns = @JoinColumn(name = "AUTHOR_ID", referencedColumnName = "ID")
-    )
-    private Set<Author> authors = new HashSet<>();
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "BOOK_ID")
+    private Collection<Author> authors = new ArrayList<>();
 }
