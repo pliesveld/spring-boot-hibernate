@@ -12,7 +12,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-class Author {
+class Book {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -21,5 +21,5 @@ class Author {
     @NotNull
     @NotBlank
     @Size(min = 1, max = 50)
-    private String name;
+    private String title;
 }

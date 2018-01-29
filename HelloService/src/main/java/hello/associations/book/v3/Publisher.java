@@ -18,7 +18,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-class Book {
+class Publisher {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -27,8 +27,8 @@ class Book {
     @NotNull
     @NotBlank
     @Size(min = 1, max = 100)
-    private String title;
+    private String name;
 
     @OneToMany(mappedBy = "book")
-    private Set<Author> authors = new HashSet<>();
+    private Set<Book> books = new HashSet<>();
 }

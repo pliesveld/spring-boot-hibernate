@@ -18,7 +18,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-class Book {
+class Publisher {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -27,13 +27,13 @@ class Book {
     @NotNull
     @NotBlank
     @Size(min = 1, max = 100)
-    private String title;
+    private String name;
 
     @OneToMany
     @JoinTable(
-            name = "BOOK_AUTHOR",
-            joinColumns = @JoinColumn(name = "BOOK_ID", referencedColumnName = "ID"),
-            inverseJoinColumns = @JoinColumn(name = "AUTHOR_ID", referencedColumnName = "ID")
+            name = "BOOK_PUBLISHER",
+            joinColumns = @JoinColumn(name = "PUBLISHER_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "BOOK_ID", referencedColumnName = "ID")
     )
-    private Set<Author> authors = new HashSet<>();
+    private Set<Book> books = new HashSet<>();
 }
