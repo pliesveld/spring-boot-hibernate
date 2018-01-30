@@ -37,7 +37,7 @@ public class BookTest extends BaseTest {
 
     @Autowired private BookRepository bookRepository;
 
-    @Autowired private AuthorRepository authorRepository;
+    @Autowired private PublisherRepository publisherRepository;
 
     @After
     public void tearDown() {
@@ -48,39 +48,39 @@ public class BookTest extends BaseTest {
     public void testContextLoad() throws Exception {
         assertNotNull(entityManager);
         assertNotNull(bookRepository);
-        assertNotNull(authorRepository);
+        assertNotNull(publisherRepository);
         assertNotNull(loadEventListener);
     }
 
     @Test
     @Transactional
-    public void addSameAuthorToExistingBook() throws Exception {
+    public void addSamePublisherToExistingBook() throws Exception {
 
-        Author author = authorRepository.findAll().iterator().next();
+        Publisher publisher = publisherRepository.findAll().iterator().next();
         Book book = bookRepository.findAll().iterator().next();
-        book.getAuthors().add(author);
+        publisher.getBooks().add(book);
         entityManager.persist(book);
 
     }
 
 
     @Test
-    public void addNewAuthorToexistingBook() throws Exception {
-        Author author = authorRepository.findByNameIgnoringCase("theSecondAuthor");
-        assertNotNull(author);
-        assertThat(author.getName(),containsString("Second"));
+    public void addNewBookToExistingPublisher() throws Exception {
+        Publisher publisher = publisherRepository.findByNameIgnoringCase("theSecondPublisher");
+        assertNotNull(publisher);
+        assertThat(publisher.getName(),containsString("Second"));
         Book book = bookRepository.findAll().iterator().next();
-        book.getAuthors().add(author);
+        publisher.getBooks().add(book);
         entityManager.persist(book);
         loadEventListener.printAllLoadCounts();
     }
 
     @Test
-    public void addNewAuthorToExistingBookByReference() throws Exception {
-        Author author = entityManager.getEntityManager().getReference(Author.class, (long)2);
+    public void addNewBookToExistingPublisherByReference() throws Exception {
+        Publisher publisher = entityManager.getEntityManager().getReference(Publisher.class, (long)2);
         Book book = bookRepository.findById((long)1).get();
         assertNotNull(book);
-        book.getAuthors().add(author);
+        publisher.getBooks().add(book);
     }
 }
 
@@ -92,7 +92,7 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
 
     @Autowired private BookRepository bookRepository;
 
-    @Autowired private AuthorRepository authorRepository;
+    @Autowired private PublisherRepository publisherRepository;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -103,17 +103,23 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
         book = bookRepository.save(book);
         entityManager.flush();
 
-        Author author = new Author();
-        author.setName("theFirstAuthor");
-        author.setOwnerId(book.getId());
-        authorRepository.save(author);
+        Book book2 = new Book();
+        book2.setTitle("another BOOK");
+        book2 = bookRepository.save(book2);
+        entityManager.flush();
 
-        Author author2 = new Author();
-        author2.setName("theSecondAuthor");
-        author2.setOwnerId(book.getId());
-        book.setAuthors(Arrays.asList(author, author2));
-        authorRepository.save(author2);
 
+        Publisher publisher = new Publisher();
+        publisher.setName("theFirstPublisher");
+        book.setOwnerId(publisher.getId());
+        publisherRepository.save(publisher);
+
+        Publisher publisher2 = new Publisher();
+        publisher2.setName("theSecondPublisher");
+        book.setOwnerId(publisher2.getId());
+
+        publisher.setBooks(Arrays.asList(book, book2));
+        publisherRepository.save(publisher2);
         LOG.debug("****************************");
     }
 }

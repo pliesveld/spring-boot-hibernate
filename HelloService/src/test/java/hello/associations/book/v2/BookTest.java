@@ -36,7 +36,7 @@ public class BookTest extends BaseTest {
 
     @Autowired private BookRepository bookRepository;
 
-    @Autowired private AuthorRepository authorRepository;
+    @Autowired private PublisherRepository publisherRepository;
 
     @After
     public void tearDown() {
@@ -47,47 +47,46 @@ public class BookTest extends BaseTest {
     public void testContextLoad() throws Exception {
         assertNotNull(entityManager);
         assertNotNull(bookRepository);
-        assertNotNull(authorRepository);
+        assertNotNull(publisherRepository);
         assertNotNull(loadEventListener);
     }
 
     @Test
     @Transactional
-    public void addSameAuthorToExistingBook() throws Exception {
+    public void addSamePublisherToExistingBook() throws Exception {
 
-        Author author = authorRepository.findAll().iterator().next();
+        Publisher publisher = publisherRepository.findAll().iterator().next();
         Book book = bookRepository.findAll().iterator().next();
-        author.setBook(book);
+        book.setPublisher(publisher);
         entityManager.persist(book);
-
     }
 
 
     @Test
-    public void addNewAuthorToexistingBook() throws Exception {
-        Author author = authorRepository.findByNameIgnoringCase("theSecondAuthor");
-        assertNotNull(author);
-        assertThat(author.getName(),containsString("Second"));
+    public void addNewBookToExistingPublisher() throws Exception {
+        Publisher publisher = publisherRepository.findByNameIgnoringCase("theSecondPublisher");
+        assertNotNull(publisher);
+        assertThat(publisher.getName(),containsString("Second"));
         Book book = bookRepository.findAll().iterator().next();
-        author.setBook(book);
+        book.setPublisher(publisher);
         entityManager.persist(book);
         loadEventListener.printAllLoadCounts();
     }
 
     @Test
-    public void addNewAuthorToExistingBookByReference() throws Exception {
-        Author author = entityManager.getEntityManager().getReference(Author.class, (long)2);
+    public void addNewBookToExistingPublisherByReference() throws Exception {
+        Publisher publisher = entityManager.getEntityManager().getReference(Publisher.class, (long)2);
         Book book = bookRepository.findById((long)1).get();
         assertNotNull(book);
-        author.setBook(book);
+        book.setPublisher(publisher);
     }
 
     @Test
-    public void getBooksContainingTwoAuthors() throws Exception {
-        this.addNewAuthorToexistingBook();
+    public void getBooksContainingTwoPublishers() throws Exception {
+        this.addNewBookToExistingPublisher();
         entityManager.flush();
         assertThat(bookRepository.count(), comparesEqualTo((long)1));
-        assertThat(authorRepository.count(), comparesEqualTo((long)2));
+        assertThat(publisherRepository.count(), comparesEqualTo((long)2));
     }
 
 
@@ -102,7 +101,7 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
 
     @Autowired private BookRepository bookRepository;
 
-    @Autowired private AuthorRepository authorRepository;
+    @Autowired private PublisherRepository publisherRepository;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -111,14 +110,14 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
         book.setTitle("a SAMPLEBOOK");
         book = bookRepository.save(book);
 
-        Author author = new Author();
-        author.setName("theFirstAuthor");
-        author.setBook(book);
-        authorRepository.save(author);
+        Publisher publisher = new Publisher();
+        publisher.setName("theFirstPublisher");
+        book.setPublisher(publisher);
+        publisherRepository.save(publisher);
 
-        Author author2 = new Author();
-        author2.setName("theSecondAuthor");
-        authorRepository.save(author2);
+        Publisher publisher2 = new Publisher();
+        publisher2.setName("theSecondPublisher");
+        publisherRepository.save(publisher2);
 
 
         LOG.debug("****************************");
