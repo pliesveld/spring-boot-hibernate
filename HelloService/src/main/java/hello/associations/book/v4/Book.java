@@ -27,6 +27,7 @@ class Book {
     @Size(min = 1, max = 50)
     private String title;
 
-    @Column(name = "OWNER_ID")
-    private long ownerId;
+    @ManyToOne
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "BOOK_ID")
+    private Publisher publisher;
 }

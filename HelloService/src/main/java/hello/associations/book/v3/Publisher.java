@@ -29,6 +29,6 @@ class Publisher {
     @Size(min = 1, max = 100)
     private String name;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "publisher")
     private Set<Book> books = new HashSet<>();
 }

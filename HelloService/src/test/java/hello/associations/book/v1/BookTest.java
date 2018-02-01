@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 
+import com.google.common.collect.Sets;
 import hello.BaseDataLoader;
 import hello.BaseTest;
 import org.apache.logging.log4j.LogManager;
@@ -61,27 +63,24 @@ public class BookTest extends BaseTest {
         entityManager.persist(book);
     }
 
-
     @Test
     public void addNewBookToExistingPublisher() throws Exception {
-        Publisher publisher = publisherRepository.findByNameIgnoringCase("theSecondPublisher");
+        Publisher publisher = publisherRepository.findByNameIgnoringCase("a SAMPLE PUBLISHER");
         assertNotNull(publisher);
-        assertThat(publisher.getName(),containsString("Second"));
-        Book book = bookRepository.findAll().iterator().next();
+        assertThat(publisher.getName(),containsString("SAMPLE"));
+        Book book = bookRepository.findByTitleIgnoringCase("aThirdBook");
+        assertNotNull(book);
         publisher.getBooks().add(book);
-        entityManager.persist(book);
-        loadEventListener.printAllLoadCounts();
     }
 
     @Test
     public void addNewBookToExistingPublisherByReference() throws Exception {
-        Publisher publisher = entityManager.getEntityManager().getReference(Publisher.class, (long)2);
-        Book book = bookRepository.findById((long)1).get();
+        Publisher publisher = entityManager.getEntityManager().getReference(Publisher.class, (long)1);
+        Book book = bookRepository.findById((long)3).get();
         assertNotNull(book);
         publisher.getBooks().add(book);
     }
 }
-
 
 @Component
 @Transactional
@@ -95,19 +94,23 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        Publisher publisher = new Publisher();
-        publisher.setName("theFirstPublisher");
-        publisherRepository.save(publisher);
-
         Book book = new Book();
-        book.setTitle("a SAMPLEBOOK");
-        publisher.setBooks(Collections.singleton(book));
+        book.setTitle("aFirstBook");
         bookRepository.save(book);
 
-        Publisher publisher2 = new Publisher();
-        publisher2.setName("theSecondPublisher");
-        publisherRepository.save(publisher2);
+        Book book2 = new Book();
+        book2.setTitle("aSecondBook");
+        bookRepository.save(book2);
 
+
+        Book book3 = new Book();
+        book3.setTitle("aThirdBook");
+        bookRepository.save(book3);
+
+        Publisher publisher = new Publisher();
+        publisher.setName("a SAMPLE PUBLISHER");
+        publisher.setBooks(Sets.newHashSet(book, book2));
+        publisherRepository.save(publisher);
 
         LOG.debug("****************************");
     }

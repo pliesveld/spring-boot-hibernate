@@ -14,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
+import com.google.common.collect.Sets;
 import hello.BaseDataLoader;
 import hello.BaseTest;
+import net.bytebuddy.matcher.StringMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.hamcrest.Matchers.*;
@@ -38,6 +41,13 @@ public class BookTest extends BaseTest {
 
     @Autowired private PublisherRepository publisherRepository;
 
+    private Publisher publisher;
+
+    @Before
+    public void setUp() throws Exception {
+        publisher = entityManager.getEntityManager().getReference(Publisher.class, (long)1);
+    }
+
     @After
     public void tearDown() {
         entityManager.flush();
@@ -49,34 +59,30 @@ public class BookTest extends BaseTest {
         assertNotNull(bookRepository);
         assertNotNull(publisherRepository);
         assertNotNull(loadEventListener);
+        assertNotNull(publisher);
+        assertNotNull(publisher.getName());
+        assertThat(publisher.getName(), hasToString("a SAMPLE PUBLISHER"));
+        assertNotNull(publisher.getName());
     }
 
     @Test
-    @Transactional
     public void addSamePublisherToExistingBook() throws Exception {
-
         Publisher publisher = publisherRepository.findAll().iterator().next();
         Book book = bookRepository.findAll().iterator().next();
         book.setPublisher(publisher);
         entityManager.persist(book);
     }
 
-
     @Test
     public void addNewBookToExistingPublisher() throws Exception {
-        Publisher publisher = publisherRepository.findByNameIgnoringCase("theSecondPublisher");
-        assertNotNull(publisher);
-        assertThat(publisher.getName(),containsString("Second"));
-        Book book = bookRepository.findAll().iterator().next();
+        Book book = bookRepository.findById((long)3).get();
+        assertNotNull(book);
         book.setPublisher(publisher);
-        entityManager.persist(book);
-        loadEventListener.printAllLoadCounts();
     }
 
     @Test
     public void addNewBookToExistingPublisherByReference() throws Exception {
-        Publisher publisher = entityManager.getEntityManager().getReference(Publisher.class, (long)2);
-        Book book = bookRepository.findById((long)1).get();
+        Book book = entityManager.getEntityManager().getReference(Book.class, (long)3);
         assertNotNull(book);
         book.setPublisher(publisher);
     }
@@ -85,14 +91,10 @@ public class BookTest extends BaseTest {
     public void getBooksContainingTwoPublishers() throws Exception {
         this.addNewBookToExistingPublisher();
         entityManager.flush();
-        assertThat(bookRepository.count(), comparesEqualTo((long)1));
-        assertThat(publisherRepository.count(), comparesEqualTo((long)2));
+        assertThat(bookRepository.count(), comparesEqualTo((long)3));
+        assertThat(publisherRepository.count(), comparesEqualTo((long)1));
     }
-
-
-
 }
-
 
 @Component
 @Transactional
@@ -106,20 +108,23 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        Book book = new Book();
-        book.setTitle("a SAMPLEBOOK");
-        book = bookRepository.save(book);
-
         Publisher publisher = new Publisher();
-        publisher.setName("theFirstPublisher");
-        book.setPublisher(publisher);
+        publisher.setName("a SAMPLE PUBLISHER");
         publisherRepository.save(publisher);
 
-        Publisher publisher2 = new Publisher();
-        publisher2.setName("theSecondPublisher");
-        publisherRepository.save(publisher2);
+        Book book = new Book();
+        book.setTitle("aFirstBook");
+        book.setPublisher(publisher);
+        bookRepository.save(book);
 
+        Book book2 = new Book();
+        book2.setTitle("aSecondBook");
+        book2.setPublisher(publisher);
+        bookRepository.save(book2);
 
+        Book book3 = new Book();
+        book3.setTitle("aThirdBook");
+        bookRepository.save(book3);
         LOG.debug("****************************");
     }
 }

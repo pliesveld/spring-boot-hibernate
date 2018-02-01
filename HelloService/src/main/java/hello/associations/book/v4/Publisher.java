@@ -33,7 +33,6 @@ class Publisher {
     @Size(min = 1, max = 100)
     private String name;
 
-    @OneToMany
-    @JoinColumn(name = "OWNER_ID", referencedColumnName = "BOOK_ID")
+    @OneToMany(mappedBy = "publisher")
     private Collection<Book> books = new ArrayList<>();
 }
