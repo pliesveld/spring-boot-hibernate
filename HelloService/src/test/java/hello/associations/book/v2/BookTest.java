@@ -24,6 +24,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static hello.associations.book.v2.BookTest.BOOK_TITLE;
+import static hello.associations.book.v2.BookTest.PUBLISHER_NAME;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -40,6 +42,10 @@ public class BookTest extends BaseTest {
     @Autowired private BookRepository bookRepository;
 
     @Autowired private PublisherRepository publisherRepository;
+
+    static final String PUBLISHER_NAME = "a SAMPLE PUBLISHER";
+
+    static final String BOOK_TITLE = "aFirstBook";
 
     private Publisher publisher;
 
@@ -61,7 +67,7 @@ public class BookTest extends BaseTest {
         assertNotNull(loadEventListener);
         assertNotNull(publisher);
         assertNotNull(publisher.getName());
-        assertThat(publisher.getName(), hasToString("a SAMPLE PUBLISHER"));
+        assertThat(publisher.getName(), hasToString(PUBLISHER_NAME));
         assertNotNull(publisher.getName());
     }
 
@@ -109,11 +115,11 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
         Publisher publisher = new Publisher();
-        publisher.setName("a SAMPLE PUBLISHER");
+        publisher.setName(PUBLISHER_NAME);
         publisherRepository.save(publisher);
 
         Book book = new Book();
-        book.setTitle("aFirstBook");
+        book.setTitle(BOOK_TITLE);
         book.setPublisher(publisher);
         bookRepository.save(book);
 

@@ -23,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static hello.associations.book.v1.BookTest.BOOK_TITLE;
+import static hello.associations.book.v1.BookTest.PUBLISHER_NAME;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -39,6 +41,10 @@ public class BookTest extends BaseTest {
     @Autowired private BookRepository bookRepository;
 
     @Autowired private PublisherRepository publisherRepository;
+
+    static final String PUBLISHER_NAME = "a SAMPLE PUBLISHER";
+
+    static final String BOOK_TITLE = "aFirstBook";
 
     @After
     public void tearDown() {
@@ -65,7 +71,7 @@ public class BookTest extends BaseTest {
 
     @Test
     public void addNewBookToExistingPublisher() throws Exception {
-        Publisher publisher = publisherRepository.findByNameIgnoringCase("a SAMPLE PUBLISHER");
+        Publisher publisher = publisherRepository.findByNameIgnoringCase(PUBLISHER_NAME);
         assertNotNull(publisher);
         assertThat(publisher.getName(),containsString("SAMPLE"));
         Book book = bookRepository.findByTitleIgnoringCase("aThirdBook");
@@ -95,7 +101,7 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
         Book book = new Book();
-        book.setTitle("aFirstBook");
+        book.setTitle(BOOK_TITLE);
         bookRepository.save(book);
 
         Book book2 = new Book();
@@ -108,7 +114,7 @@ class BookDataLoader extends BaseDataLoader implements ApplicationListener<Appli
         bookRepository.save(book3);
 
         Publisher publisher = new Publisher();
-        publisher.setName("a SAMPLE PUBLISHER");
+        publisher.setName(PUBLISHER_NAME);
         publisher.setBooks(Sets.newHashSet(book, book2));
         publisherRepository.save(publisher);
 
