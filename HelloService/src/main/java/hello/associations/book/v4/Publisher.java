@@ -25,7 +25,7 @@ class Publisher {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "BOOK_ID")
+    @Column(name = "PUBLISHER_ID")
     private Long id;
 
     @NotNull
