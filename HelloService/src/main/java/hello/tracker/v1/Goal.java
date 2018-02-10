@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,9 @@ public class Goal {
     @Column(name = "GOAL_ID")
     private Long id;
 
+    @NotNull
     @Range(min = 1, max = 120)
-    @Column(name = "MINUTES")
+    @Column(name = "MINUTES", nullable = false)
     private int minutes;
 
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

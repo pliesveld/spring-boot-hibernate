@@ -20,6 +20,7 @@ class Book {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "BOOK_ID")
     private Long id;
 
     @NotNull
@@ -28,6 +29,6 @@ class Book {
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "OWNER_ID", referencedColumnName = "BOOK_ID")
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "PUBLISHER_ID")
     private Publisher publisher;
 }

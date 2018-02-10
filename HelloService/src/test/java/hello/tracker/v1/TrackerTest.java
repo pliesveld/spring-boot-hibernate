@@ -42,6 +42,8 @@ public class TrackerTest extends BaseTest {
 
     static final String EXERCISE_NAME = "A SAMPLE EXERCISE";
 
+    static final long GOAL_ID = 1;
+
     @After
     public void tearDown() {
         entityManager.flush();
@@ -54,8 +56,7 @@ public class TrackerTest extends BaseTest {
 
     @Test
     public void testSaveExercise() throws Exception {
-        Goal goal = entityManager.getEntityManager().getReference(Goal.class, (long) 1);
-
+        Goal goal = entityManager.getEntityManager().getReference(Goal.class, GOAL_ID);
         Exercise exercise = new Exercise();
         exercise.setMinutes(15);
         exercise.setGoal(goal);
@@ -95,8 +96,6 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
         Goal goal = new Goal();
         goal.setMinutes(45);
         goalRepository.save(goal);
-
-
 
         entityManager.flush();
 
