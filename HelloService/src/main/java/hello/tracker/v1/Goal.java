@@ -11,7 +11,7 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
@@ -31,5 +31,5 @@ public class Goal {
     private int minutes;
 
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Exercise> exercises = new ArrayList<>();
+    private Collection<Exercise> exercises = new ArrayList<>();
 }
