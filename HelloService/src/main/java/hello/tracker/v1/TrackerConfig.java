@@ -9,4 +9,4 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackageClasses = TrackerConfig.class)
 @EnableTransactionManagement
 @EntityScan(basePackageClasses = TrackerConfig.class)
-public class TrackerConfig {}
+class TrackerConfig {}

@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Data
-public class Exercise {
+class Exercise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

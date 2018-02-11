@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Data
 @Entity
-public class Goal {
+class Goal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
