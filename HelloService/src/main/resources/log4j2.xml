@@ -14,6 +14,7 @@
         <Property name="LOG_APP_LEVEL">ALL</Property>
         <Property name="LOG_JDBC_LEVEL">WARN</Property>
         <Property name="LOG_SQL_LEVEL">DEBUG</Property>
+        <Property name="LOG_SQL_PARAMS_LEVEL">DEBUG</Property>
         <Property name="LOG_ENTITY_LEVEL">DEBUG</Property>
 
         <Property name="LOG_TRANS_LEVEL">WARN</Property>
@@ -80,6 +81,10 @@
         </logger>
 
         <logger name="org.hibernate.SQL" level="${sys:LOG_SQL_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SQL"/>
+        </logger>
+
+        <logger name="org.hibernate.type.descriptor.sql" level="${sys:LOG_SQL_PARAMS_LEVEL}" additivity="false">
             <AppenderRef ref="CONSOLE_SQL"/>
         </logger>
 
