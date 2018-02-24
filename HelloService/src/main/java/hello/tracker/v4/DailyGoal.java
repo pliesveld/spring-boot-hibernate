@@ -1,5 +1,6 @@
 package hello.tracker.v4;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
@@ -7,12 +8,20 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.Data;
 
@@ -64,13 +73,16 @@ class DailyGoal {
     )
     private User user;
 
-    @OneToOne
-    @JoinColumn(
-            name = "GOAL_ID",
-            insertable = true, updatable = false
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @MapKeyJoinColumn(name = "ACTIVITY_ID")
+    @JoinTable(
+        name = "DAILYGOALS",
+        joinColumns = {
+                @JoinColumn(name = "USER_ID"),
+                @JoinColumn(name = "WEEKDAY")
+        },
+        inverseJoinColumns = @JoinColumn(name = "GOAL_ID")
     )
-    private Goal goal;
+    private Map<Activity, Goal> goals = new HashMap<>();
 
-    @Enumerated(value = EnumType.STRING)
-    private DailyGoalStatus status = DailyGoalStatus.DAILY_GOAL_NOT_COMPLETED;
 }

@@ -27,7 +27,9 @@ import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static hello.tracker.v4.TrackerTest.USER_ID;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -47,6 +49,8 @@ public class TrackerTest extends BaseTest {
     @Autowired private ActivityRepository activityRepository;
 
     @Autowired private UserRepository userRepository;
+
+    @Autowired private DailyGoalRepository dailyGoalRepository;
 
     static final String EXERCISE_NAME = "A SAMPLE EXERCISE";
 
@@ -105,15 +109,44 @@ public class TrackerTest extends BaseTest {
     @Test
     public void saveDailyGoal() throws Exception {
         Goal goal = getGoal();
+        Activity activity = getActivity();
         DayOfWeek weekday = DayOfWeek.SUNDAY;
 
         DailyGoal.Id id = new DailyGoal.Id(USER_ID, weekday);
 
         DailyGoal dailyGoal = new DailyGoal();
         dailyGoal.setId(id);
-        dailyGoal.setGoal(goal);
-
+        dailyGoal.getGoals().put(activity, goal);
         entityManager.persist(dailyGoal);
+    }
+
+    @Test
+    public void saveNewActivityToExistingDailyGoal() throws Exception {
+
+        this.saveDailyGoal();
+        entityManager.getEntityManager().flush();
+        entityManager.getEntityManager().clear();
+
+        Goal goal = getGoal();
+        DailyGoal.Id id = new DailyGoal.Id(USER_ID, DayOfWeek.SUNDAY);
+        Optional<DailyGoal> dailyGoal = dailyGoalRepository.findById(id);
+
+        assertTrue(dailyGoal.isPresent());
+
+//        Activity activity = getActivity();
+//        Goal goal = dailyGoal.get().getGoals().get(activity);
+//        assertNotNull(goal);
+//        assertThat(goal.getId(),is(equalTo(GOAL_ID)));
+
+        Activity activity = new Activity();
+        activity.setName("ACTIVITY2 TEST");
+        activity.setDescription("DESCRIPTION ACTIVITY2 TEST");
+        entityManager.persistAndFlush(activity);
+
+        dailyGoal.get().getGoals().put(activity,goal);
+
+        entityManager.flush();
+        assertThat(dailyGoalRepository.count(), is(greaterThan((long)1)));
     }
 
     @Test
@@ -160,8 +193,6 @@ public class TrackerTest extends BaseTest {
         assertThat(results, Matchers.iterableWithSize(2));
         results.forEach(LOG::debug);
     }
-
-
 }
 
 @Component
@@ -197,6 +228,13 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
         user.setUsername(USER_NAME_EXAMPLE);
         userRepository.save(user);
         entityManager.flush();
+
+
+        DailyGoal.Id id = new DailyGoal.Id(USER_ID,DayOfWeek.FRIDAY);
+        DailyGoal dailyGoal = new DailyGoal();
+        dailyGoal.setId(id);
+        dailyGoal.getGoals().put(activity,goal);
+        entityManager.persist(dailyGoal);
 
         LOG.debug("****************************");
     }
