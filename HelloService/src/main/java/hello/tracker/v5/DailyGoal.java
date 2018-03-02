@@ -2,87 +2,52 @@ package hello.tracker.v5;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
-import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
-import java.io.Serializable;
-import java.time.DayOfWeek;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "DAILY_GOAL")
-@Data
-@org.hibernate.annotations.Immutable
 class DailyGoal {
 
-    @Embeddable
-    static class Id implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "GOAL_ID")
+    private Long id;
 
-        @Column(name = "USER_ID")
-        protected Long userId;
+    @NotNull
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "CONDITON",  nullable = false)
+    private GoalCriterion goalCriterion;
 
-        @Column(name = "WEEKDAY")
-        protected DayOfWeek dayOfWeek;
+    @OneToMany(mappedBy = "dailyGoal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<Exercise> exercises = new ArrayList<>();
 
-        public Id() {
+    public void addCriterion(GoalCriterion goalCriterion) {
+
+        if (goalCriterion == null) {
+            throw new IllegalArgumentException("Cannot pass null goal criterion");
         }
 
-        public Id(Long userId, DayOfWeek dayOfWeek) {
-            this.userId = userId;
-            this.dayOfWeek = dayOfWeek;
+        if (goalCriterion.getDailyGoal() != null) {
+            throw new IllegalArgumentException("GoalCriterion has already been assigned");
         }
 
-        public boolean equals(Object o) {
-            if (o != null && o instanceof Id) {
-                Id that = (Id) o;
-                return this.userId.equals(that.userId)
-                        && this.dayOfWeek.equals(that.dayOfWeek);
-            }
-            return false;
-        }
-
-        public int hashCode() {
-            return userId.hashCode() + dayOfWeek.hashCode();
-        }
-
+        setGoalCriterion(goalCriterion);
+        goalCriterion.setDailyGoal(this);
     }
-
-    @EmbeddedId
-    private Id id = new Id();
-
-    @ManyToOne
-    @JoinColumn(
-            name = "USER_ID",
-            insertable = false, updatable = false
-    )
-    private User user;
-
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @MapKeyJoinColumn(name = "ACTIVITY_ID")
-    @JoinTable(
-        name = "DAILYGOALS",
-        joinColumns = {
-                @JoinColumn(name = "USER_ID"),
-                @JoinColumn(name = "WEEKDAY")
-        },
-        inverseJoinColumns = @JoinColumn(name = "GOAL_ID")
-    )
-    private Map<Activity, Goal> goals = new HashMap<>();
-
 }

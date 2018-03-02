@@ -34,5 +34,5 @@ class Exercise {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "GOAL_ID", nullable = false)
-    private Goal goal;
+    private DailyGoal dailyGoal;
 }

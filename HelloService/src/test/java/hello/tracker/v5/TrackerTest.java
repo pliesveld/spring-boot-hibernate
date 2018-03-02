@@ -12,17 +12,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Query;
-
 import java.time.DayOfWeek;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 import hello.BaseDataLoader;
 import hello.BaseTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.After;
 import org.junit.Test;
@@ -44,13 +41,13 @@ public class TrackerTest extends BaseTest {
 
     @Autowired private ExerciseRepository exerciseRepository;
 
-    @Autowired private GoalRepository goalRepository;
+    @Autowired private DailyGoalRepository dailyGoalRepository;
 
     @Autowired private ActivityRepository activityRepository;
 
     @Autowired private UserRepository userRepository;
 
-    @Autowired private DailyGoalRepository dailyGoalRepository;
+    @Autowired private DailyAgendaRepository dailyAgendaRepository;
 
     static final String EXERCISE_NAME = "A SAMPLE EXERCISE";
 
@@ -69,8 +66,8 @@ public class TrackerTest extends BaseTest {
         entityManager.flush();
     }
 
-    private Goal getGoal() {
-        return entityManager.getEntityManager().getReference(Goal.class, GOAL_ID);
+    private DailyGoal getGoal() {
+        return entityManager.getEntityManager().getReference(DailyGoal.class, GOAL_ID);
     }
 
     private Activity getActivity() {
@@ -85,11 +82,11 @@ public class TrackerTest extends BaseTest {
     public void testContextLoad() throws Exception {
         assertNotNull(entityManager);
 
-        assertTrue(goalRepository.existsById(GOAL_ID));
+        assertTrue(dailyGoalRepository.existsById(GOAL_ID));
         assertTrue(activityRepository.existsById(ACTIVITY_ID));
         assertTrue(userRepository.existsById(USER_ID));
 
-        Optional<Goal> goal = goalRepository.findById(GOAL_ID);
+        Optional<DailyGoal> goal = dailyGoalRepository.findById(GOAL_ID);
         Optional<Activity> activity = activityRepository.findById(ACTIVITY_ID);
         Optional<User> user = userRepository.findById(USER_ID);
 
@@ -100,24 +97,24 @@ public class TrackerTest extends BaseTest {
 
     @Test
     public void loadGoalID1() throws Exception {
-        Goal goal = getGoal();
-        assertNotNull(goal);
-        assertThat(goal.getExercises(), IsIterableWithSize.iterableWithSize(0));
-        assertThat(goal.getId(), is(equalTo(GOAL_ID)));
+        DailyGoal dailyGoal = getGoal();
+        assertNotNull(dailyGoal);
+        assertThat(dailyGoal.getExercises(), IsIterableWithSize.iterableWithSize(0));
+        assertThat(dailyGoal.getId(), is(equalTo(GOAL_ID)));
     }
 
     @Test
     public void saveDailyGoal() throws Exception {
-        Goal goal = getGoal();
+        DailyGoal dailyGoal = getGoal();
         Activity activity = getActivity();
         DayOfWeek weekday = DayOfWeek.SUNDAY;
 
-        DailyGoal.Id id = new DailyGoal.Id(USER_ID, weekday);
+        DailyAgenda.Id id = new DailyAgenda.Id(USER_ID, weekday);
 
-        DailyGoal dailyGoal = new DailyGoal();
-        dailyGoal.setId(id);
-        dailyGoal.getGoals().put(activity, goal);
-        entityManager.persist(dailyGoal);
+        DailyAgenda dailyAgenda = new DailyAgenda();
+        dailyAgenda.setId(id);
+        dailyAgenda.getGoals().put(activity, dailyGoal);
+        entityManager.persist(dailyAgenda);
     }
 
     @Test
@@ -127,16 +124,11 @@ public class TrackerTest extends BaseTest {
         entityManager.getEntityManager().flush();
         entityManager.getEntityManager().clear();
 
-        Goal goal = getGoal();
-        DailyGoal.Id id = new DailyGoal.Id(USER_ID, DayOfWeek.SUNDAY);
-        Optional<DailyGoal> dailyGoal = dailyGoalRepository.findById(id);
+        DailyGoal goal = getGoal();
+        DailyAgenda.Id id = new DailyAgenda.Id(USER_ID, DayOfWeek.SUNDAY);
+        Optional<DailyAgenda> dailyGoal = dailyAgendaRepository.findById(id);
 
         assertTrue(dailyGoal.isPresent());
-
-//        Activity activity = getActivity();
-//        Goal goal = dailyGoal.get().getGoals().get(activity);
-//        assertNotNull(goal);
-//        assertThat(goal.getId(),is(equalTo(GOAL_ID)));
 
         Activity activity = new Activity();
         activity.setName("ACTIVITY2 TEST");
@@ -146,17 +138,7 @@ public class TrackerTest extends BaseTest {
         dailyGoal.get().getGoals().put(activity,goal);
 
         entityManager.flush();
-        assertThat(dailyGoalRepository.count(), is(greaterThan((long)1)));
-    }
-
-    @Test
-    public void testSaveExercise() throws Exception {
-        Goal goal = getGoal();
-        Exercise exercise = new Exercise();
-        exercise.setMinutes(15);
-        exercise.setGoal(goal);
-        exercise.setActivity(getActivity());
-        exerciseRepository.save(exercise);
+        assertThat(dailyAgendaRepository.count(), is(greaterThan((long)1)));
     }
 
     @Test
@@ -172,27 +154,31 @@ public class TrackerTest extends BaseTest {
         this.savesNewActivity();
         entityManager.flush();
 
-        Goal goal = getGoal();
+        DailyGoal dailyGoal = getGoal();
         Exercise exercise = new Exercise();
         exercise.setActivity(getActivity());
         exercise.setMinutes(30);
-        exercise.setGoal(goal);
+        exercise.setDailyGoal(dailyGoal);
         exerciseRepository.save(exercise);
     }
 
     @Test
-    public void makeGoalReportById() throws Exception {
-        this.testSaveExercise();
-        this.testSaveExercise();
-        entityManager.flush();
-        Query query = entityManager.getEntityManager().createQuery("Select new hello.tracker.v5.GoalReport(g.minutes, e.minutes, e.activity.name) " +
-                      "from Goal g, Exercise e where g.id = e.goal.id");
-
-        List<GoalReport> results = query.getResultList();
-        assertNotNull(results);
-        assertThat(results, Matchers.iterableWithSize(2));
-        results.forEach(LOG::debug);
+    public void savesNewGoalStrengthTraining() throws Exception {
+        DailyGoal dailyGoal = new DailyGoal();
+        dailyGoal.addCriterion(new GoalStrengthTrainingCriterion(15));
+        dailyGoalRepository.save(dailyGoal);
     }
+
+    @Test
+    public void savesDurationExerciseAgainst() throws Exception {
+        DailyGoal dailyGoal = getGoal();
+        Exercise exercise = new Exercise();
+        exercise.setMinutes(15);
+        exercise.setDailyGoal(dailyGoal);
+        exercise.setActivity(getActivity());
+        exerciseRepository.save(exercise);
+    }
+
 }
 
 @Component
@@ -202,7 +188,7 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
 
     @Autowired private ExerciseRepository exerciseRepository;
 
-    @Autowired private GoalRepository goalRepository;
+    @Autowired private DailyGoalRepository dailyGoalRepository;
 
     @Autowired private ActivityRepository activityRepository;
 
@@ -215,9 +201,12 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        Goal goal = new Goal();
-        goal.setMinutes(45);
-        goalRepository.save(goal);
+        DailyGoal dailyGoal = new DailyGoal();
+        dailyGoal.addCriterion(new GoalDurationCriterion(60));
+
+        DailyGoal dailyGoal2 = new DailyGoal();
+        dailyGoal2.addCriterion(new GoalStrengthTrainingCriterion(15, 1));
+        dailyGoalRepository.saveAll(Arrays.asList(dailyGoal, dailyGoal2));
 
         Activity activity = new Activity();
         activity.setName(ACTIVITY_NAME_EXAMPLE1);
@@ -230,11 +219,11 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
         entityManager.flush();
 
 
-        DailyGoal.Id id = new DailyGoal.Id(USER_ID,DayOfWeek.FRIDAY);
-        DailyGoal dailyGoal = new DailyGoal();
-        dailyGoal.setId(id);
-        dailyGoal.getGoals().put(activity,goal);
-        entityManager.persist(dailyGoal);
+        DailyAgenda.Id id = new DailyAgenda.Id(USER_ID,DayOfWeek.FRIDAY);
+        DailyAgenda dailyAgenda = new DailyAgenda();
+        dailyAgenda.setId(id);
+        dailyAgenda.getGoals().put(activity, dailyGoal);
+        entityManager.persist(dailyAgenda);
 
         LOG.debug("****************************");
     }
