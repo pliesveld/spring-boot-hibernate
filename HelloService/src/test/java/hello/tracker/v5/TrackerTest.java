@@ -157,7 +157,9 @@ public class TrackerTest extends BaseTest {
         DailyGoal dailyGoal = getGoal();
         Exercise exercise = new Exercise();
         exercise.setActivity(getActivity());
-        exercise.setMinutes(30);
+        ExerciseDurationProgress exerciseDurationProgress = new ExerciseDurationProgress(15);
+        exerciseDurationProgress.setExercise(exercise);
+        exercise.setExerciseProgress(exerciseDurationProgress);
         exercise.setDailyGoal(dailyGoal);
         exerciseRepository.save(exercise);
     }
@@ -173,7 +175,9 @@ public class TrackerTest extends BaseTest {
     public void savesDurationExerciseAgainst() throws Exception {
         DailyGoal dailyGoal = getGoal();
         Exercise exercise = new Exercise();
-        exercise.setMinutes(15);
+        ExerciseDurationProgress exerciseDurationProgress = new ExerciseDurationProgress(15);
+        exercise.setExerciseProgress(exerciseDurationProgress);
+        exerciseDurationProgress.setExercise(exercise);
         exercise.setDailyGoal(dailyGoal);
         exercise.setActivity(getActivity());
         exerciseRepository.save(exercise);
@@ -224,6 +228,7 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
         dailyAgenda.setId(id);
         dailyAgenda.getGoals().put(activity, dailyGoal);
         entityManager.persist(dailyAgenda);
+        entityManager.flush();
 
         LOG.debug("****************************");
     }

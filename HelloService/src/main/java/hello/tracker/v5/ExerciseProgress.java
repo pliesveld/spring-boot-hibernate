@@ -15,7 +15,7 @@ import lombok.Data;
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-class ExerciseProgress {
+abstract class ExerciseProgress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
