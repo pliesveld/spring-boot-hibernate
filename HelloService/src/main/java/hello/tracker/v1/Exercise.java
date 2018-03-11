@@ -24,7 +24,7 @@ class Exercise {
     private Long id;
 
     @NotNull
-    @Range(min= 1, max = 120)
+    @Range(min = 1, max = 120)
     @Column(name = "EXERCISE_MINUTES", nullable = false)
     private int minutes;
 
