@@ -205,12 +205,12 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        DailyGoal dailyGoal = new DailyGoal();
-        dailyGoal.addCriterion(new GoalDurationCriterion(60));
+        DailyGoal durationDailyGoal = new DailyGoal();
+        durationDailyGoal.addCriterion(new GoalDurationCriterion(60));
 
-        DailyGoal dailyGoal2 = new DailyGoal();
-        dailyGoal2.addCriterion(new GoalStrengthTrainingCriterion(15, 1));
-        dailyGoalRepository.saveAll(Arrays.asList(dailyGoal, dailyGoal2));
+        DailyGoal strengthTrainingDailyGoal = new DailyGoal();
+        strengthTrainingDailyGoal.addCriterion(new GoalStrengthTrainingCriterion(15, 1));
+        dailyGoalRepository.saveAll(Arrays.asList(durationDailyGoal, strengthTrainingDailyGoal));
 
         Activity activity = new Activity();
         activity.setName(ACTIVITY_NAME_EXAMPLE1);
@@ -226,7 +226,7 @@ class TrackerDataLoader extends BaseDataLoader implements ApplicationListener<Ap
         DailyAgenda.Id id = new DailyAgenda.Id(USER_ID,DayOfWeek.FRIDAY);
         DailyAgenda dailyAgenda = new DailyAgenda();
         dailyAgenda.setId(id);
-        dailyAgenda.getGoals().put(activity, dailyGoal);
+        dailyAgenda.getGoals().put(activity, durationDailyGoal);
         entityManager.persist(dailyAgenda);
         entityManager.flush();
 
