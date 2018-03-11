@@ -1,6 +1,6 @@
 package hello.utils;
 
-import javax.persistence.Entity;
+import javax.persistence.Entity;import javax.persistence.Table;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.metamodel.Type;
 

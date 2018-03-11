@@ -1,5 +1,7 @@
 package hello.tracker.v5;
 
+import lombok.Data;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,12 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
-import org.hibernate.validator.constraints.Range;
-
 @Entity
+@Table(schema = "TRACKER")
 @Data
 class Exercise {
 

@@ -1,32 +1,25 @@
 package hello.tracker.v5;
 
+import lombok.Data;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
 import javax.persistence.MapKeyJoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.Data;
-
 @Entity
-@Table(name = "USER_DAILY_AGENDA")
+@Table(schema = "TRACKER", name = "USER_DAILY_AGENDA")
 @Data
 @org.hibernate.annotations.Immutable
 class DailyAgenda {

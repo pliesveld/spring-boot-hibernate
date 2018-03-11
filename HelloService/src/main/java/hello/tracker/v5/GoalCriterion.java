@@ -1,5 +1,7 @@
 package hello.tracker.v5;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,12 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-import lombok.Data;
 
 @Data
 @Entity
+@Table(schema = "TRACKER")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 abstract class GoalCriterion {
 

@@ -1,13 +1,13 @@
 package hello.tracker.v5;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-
 import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Data
 @Entity
+@Table(schema = "TRACKER")
 class GoalDurationCriterion extends GoalCriterion {
 
     private int minutes;

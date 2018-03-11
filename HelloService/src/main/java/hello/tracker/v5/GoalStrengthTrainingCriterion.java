@@ -1,14 +1,14 @@
 package hello.tracker.v5;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Transient;
-
 import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Data
 @Entity
+@Table(schema = "TRACKER")
 class GoalStrengthTrainingCriterion extends GoalCriterion implements Comparable<GoalStrengthTrainingCriterion> {
 
     private int reps;

@@ -1,5 +1,7 @@
 package hello.tracker.v3;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
@@ -10,14 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import java.io.Serializable;
 import java.time.DayOfWeek;
 
-import lombok.Data;
-
 @Entity
-@Table(name = "DAILY_GOAL")
+@Table(schema = "TRACKER", name = "DAILY_GOAL")
 @Data
 @org.hibernate.annotations.Immutable
 class DailyGoal {
