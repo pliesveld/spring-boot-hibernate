@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
 bootRun {
-    main = 'hello.Application'
+//    main = 'hello.Application'
 	jvmArgs = [
 	"-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005",
 	]
