@@ -21,7 +21,7 @@ abstract class ExerciseProgress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "CONDITION_ID")
+    @Column(name = "PROGRESS_ID")
     private Long id;
 
     @NotNull

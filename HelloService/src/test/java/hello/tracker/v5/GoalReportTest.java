@@ -22,7 +22,6 @@ import javax.persistence.Query;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TrackerConfig.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -50,7 +49,9 @@ public class GoalReportTest extends BaseTest {
 
     private String ACTIVITY_NAME_EXAMPLE1 = "A SAMPLE ACTIVITY";
 
-    static final long GOAL_ID = 1;
+    static final long GOAL_ID_DURATION = 1;
+
+    static final long GOAL_ID_STRENGTH_TRAINING = 2;
 
     static final long ACTIVITY_ID = 1;
 
@@ -61,8 +62,12 @@ public class GoalReportTest extends BaseTest {
         entityManager.flush();
     }
 
-    private DailyGoal getGoal() {
-        return entityManager.getEntityManager().getReference(DailyGoal.class, GOAL_ID);
+    private DailyGoal getDurationGoal() {
+        return entityManager.getEntityManager().getReference(DailyGoal.class, GOAL_ID_DURATION);
+    }
+
+    private DailyGoal getStrengthTrainingGoal() {
+        return entityManager.getEntityManager().getReference(DailyGoal.class, GOAL_ID_STRENGTH_TRAINING);
     }
 
     private Activity getActivity() {
@@ -80,7 +85,7 @@ public class GoalReportTest extends BaseTest {
 
     @Test
     public void saveExerciseDurationProgress() throws Exception {
-        DailyGoal dailyGoal = getGoal();
+        DailyGoal dailyGoal = getDurationGoal();
         Exercise exercise = new Exercise();
         exercise.setActivity(getActivity());
         ExerciseDurationProgress exerciseDurationProgress = new ExerciseDurationProgress(15);
@@ -91,18 +96,54 @@ public class GoalReportTest extends BaseTest {
     }
 
     @Test
+    public void saveExerciseStrengthTrainingProgress() throws Exception {
+        DailyGoal dailyGoal = getStrengthTrainingGoal();
+        Exercise exercise = new Exercise();
+        exercise.setActivity(getActivity());
+        ExerciseStrengthTrainingProgress exerciseDurationProgress = new ExerciseStrengthTrainingProgress(15);
+        exerciseDurationProgress.setExercise(exercise);
+        exercise.setExerciseProgress(exerciseDurationProgress);
+        exercise.setDailyGoal(dailyGoal);
+        exerciseRepository.save(exercise);
+    }
+
+    @Test
     public void makeGoalReportById() throws Exception {
         this.saveExerciseDurationProgress();
         this.saveExerciseDurationProgress();
+
         entityManager.flush();
         Query query = entityManager.getEntityManager()
-            .createQuery("Select new hello.tracker.v5.GoalReport(gdc.minutes, e.exerciseProgress.minutes, e.activity.name) " +
-                "from DailyGoal dg, Exercise e, GoalDurationCriterion gdc where dg.id = e.dailyGoal.id and gdc.id = dg.goalCriterion.id");
+            .createQuery(
+       "Select new hello.tracker.v5.GoalDurationReport(gdc.minutes, e.exerciseProgress.minutes, e.activity.name) " +
+                "from DailyGoal dg, Exercise e, GoalDurationCriterion gdc " +
+                "where dg.id = e.dailyGoal.id and gdc.id = dg.goalCriterion.id");
 
-        List<GoalReport> results = query.getResultList();
+        List<GoalDurationReport> results = query.getResultList();
         assertNotNull(results);
         assertThat(results, Matchers.iterableWithSize(2));
         results.forEach(LOG::debug);
     }
+
+    @Test
+    public void testStrengthTraining_goalReport() throws Exception {
+        this.saveExerciseStrengthTrainingProgress();
+        this.saveExerciseStrengthTrainingProgress();
+        this.saveExerciseStrengthTrainingProgress();
+
+        entityManager.flush();
+        Query query = entityManager.getEntityManager()
+            .createQuery(
+       "Select new hello.tracker.v5.GoalRepsReport(gstc.reps, e.exerciseProgress.reps, e.activity.name) " +
+                "from DailyGoal dg, Exercise e, GoalStrengthTrainingCriterion gstc " +
+                "where dg.id = e.dailyGoal.id and gstc.id = dg.goalCriterion.id");
+
+        List<GoalRepsReport> results = query.getResultList();
+        assertNotNull(results);
+        assertThat(results, Matchers.iterableWithSize(3));
+        results.forEach(LOG::debug);
+    }
+
+
 }
 
