@@ -1,4 +1,4 @@
-package hello.tracker.v4;
+package hello.tracker.v5;
 
 import lombok.Data;
 
@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(schema = "TRACKER", name = "DAILY_GOAL")
+@Table(schema = "TRACKER", name = "USER_DAILY_AGENDA")
 @Data
 @org.hibernate.annotations.Immutable
-class DailyGoal {
+class DailyAgenda {
 
     @Embeddable
     static class Id implements Serializable {
@@ -69,13 +69,13 @@ class DailyGoal {
     @ManyToMany(cascade = CascadeType.PERSIST)
     @MapKeyJoinColumn(name = "ACTIVITY_ID")
     @JoinTable(
-        name = "DAILYGOALS",
+        name = "DAILY_AGENDA",
         joinColumns = {
                 @JoinColumn(name = "USER_ID"),
                 @JoinColumn(name = "WEEKDAY")
         },
         inverseJoinColumns = @JoinColumn(name = "GOAL_ID")
     )
-    private Map<Activity, Goal> goals = new HashMap<>();
+    private Map<Activity,DailyGoal> goals = new HashMap<>();
 
 }

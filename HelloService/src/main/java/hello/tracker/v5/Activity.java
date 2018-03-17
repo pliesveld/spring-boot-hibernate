@@ -1,4 +1,4 @@
-package hello.tracker.v3;
+package hello.tracker.v5;
 
 import lombok.Data;
 
@@ -13,13 +13,17 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(schema = "TRACKER")
 @Data
-class User {
+class Activity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID")
+    @Column(name = "ACTIVITY_ID")
     private Long id;
 
     @NotNull
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Column(name = "ACTIVITY_NAME", nullable = false)
+    private String name;
+
+    @NotNull
+    private String description;
 }

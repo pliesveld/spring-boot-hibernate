@@ -1,8 +1,8 @@
-package hello.tracker.v1;
+package hello.tracker.v5;
 
 import lombok.Data;
-import org.hibernate.validator.constraints.Range;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -24,16 +25,17 @@ class Exercise {
     private Long id;
 
     @NotNull
-    @Range(min = 1, max = 120)
-    @Column(name = "EXERCISE_MINUTES", nullable = false)
-    private int minutes;
+    @JoinColumn(name = "PROGRESS_ID", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    private ExerciseProgress exerciseProgress;
 
     @NotNull
-    @Column(name = "EXERCISE_ACTIVITY", nullable = false)
-    private String activity;
+    @ManyToOne
+    @JoinColumn(name = "ACTIVITY_ID", nullable = false)
+    private Activity activity;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "GOAL_ID", nullable = false)
-    private Goal goal;
+    private DailyGoal dailyGoal;
 }

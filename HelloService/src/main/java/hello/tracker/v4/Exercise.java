@@ -1,5 +1,8 @@
 package hello.tracker.v4;
 
+import lombok.Data;
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,12 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
-import org.hibernate.validator.constraints.Range;
-
 @Entity
+@Table(schema = "TRACKER")
 @Data
 class Exercise {
 
@@ -22,7 +24,7 @@ class Exercise {
     private Long id;
 
     @NotNull
-    @Range(min= 1, max = 120)
+    @Range(min = 1, max = 120)
     @Column(name = "EXERCISE_MINUTES", nullable = false)
     private int minutes;
 
