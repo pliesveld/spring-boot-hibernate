@@ -26,6 +26,13 @@ allprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'application'
     mainClassName = 'hello.Application'
+
+    repositories {
+        mavenCentral()
+        maven{ url { 'http://repo.springsource.org/libs-release/' }}
+        maven{ url { 'http://repo.springsource.org/libs-milestone/' }}
+        maven{ url { 'http://repo.springsource.org/libs-snapshot/' }}
+    }
 }
 
 subprojects {
@@ -41,11 +48,5 @@ subprojects {
         configFile = rootProject.file('config/checkstyle/checkstyle.xml')
     }
 
-    repositories {
-        mavenCentral()
-        maven{ url { 'http://repo.springsource.org/libs-release/' }}
-        maven{ url { 'http://repo.springsource.org/libs-milestone/' }}
-        maven{ url { 'http://repo.springsource.org/libs-snapshot/' }}
-    }
 }
 
