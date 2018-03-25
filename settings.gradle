@@ -1,3 +1,5 @@
 include 'HelloService'
+include 'EnvarsExample'
 
 rootProject.name = 'hibernateTest'
+

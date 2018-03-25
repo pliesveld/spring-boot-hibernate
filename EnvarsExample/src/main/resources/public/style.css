@@ -1,0 +1,14 @@
+.rev-btn {
+    min-width: 10px;
+    min-height: 10px;
+    display: inline-block;
+}
+
+.rev-btn:hover {
+    background-color: red;
+}
+
+#textbox {
+    min-width: 100%;
+    min-height: 75%;
+}

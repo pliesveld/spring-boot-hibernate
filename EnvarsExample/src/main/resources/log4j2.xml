@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" 
+    configDebug="false" monitorInterval="1" status="ERROR" name="CONFIG_DEV">
+
+    <Properties>
+        <Property name="logFolder">/tmp/log</Property>
+
+        <Property name="hibernatefilename">hibernate.log</Property>
+        <Property name="servicefilename">service.log</Property>
+        <Property name="springbootdebug">spring-boot.log</Property>
+        <Property name="springdebug">spring-debug.log</Property>
+        <Property name="springweb">spring-web.log</Property>
+
+        <Property name="LOG_APP_LEVEL">ALL</Property>
+        <Property name="LOG_JDBC_LEVEL">WARN</Property>
+        <Property name="LOG_SQL_LEVEL">DEBUG</Property>
+        <Property name="LOG_SQL_PARAMS_LEVEL">DEBUG</Property>
+        <Property name="LOG_ENTITY_LEVEL">DEBUG</Property>
+
+        <Property name="LOG_TRANS_LEVEL">WARN</Property>
+        <Property name="LOG_TRANS_SYNC_LEVEL">WARN</Property>
+
+        <Property name="LOG_MVC_LEVEL">WARN</Property>
+        <Property name="LOG_SECURITY_LEVEL">WARN</Property>
+        <Property name="LOG_AUDIT_LEVEL">WARN</Property>
+
+        <Property name="LOG_SPRING_LEVEL">WARN</Property>
+        <Property name="LOG_BEANS_LEVEL">WARN</Property>
+        <Property name="LOG_BEANS_CACHED_LEVEL">WARN</Property>
+
+
+        <!-- ignore the following classes in repoting exceptions -->
+        <Property name="filters">org.junit,org.apache.maven,sun.reflect,java.lang.reflect</Property>
+
+        <Property name="leveltag">%highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=cyan bold, DEBUG=green bold, TRACE=blue}</Property>
+
+        <Property name="loggertag">%.20c</Property>
+        <Property name="loggertag_debug">%.20c#%green{%.20method}</Property>
+        <Property name="exceptiontag_filtered">%xEx{filters(${filters})}</Property>
+
+    </Properties>
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+         </Console>
+
+        <Console name="CONSOLE_SQL" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="%m%n"/>
+        </Console>
+
+        <Console name="CONSOLE_SPRING" target="SYSTEM_OUT">
+            <filters>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            </filters>
+            <PatternLayout pattern="${leveltag} %replace{%cyan{%C}}{org.springframework}{} %message%n"/>
+        </Console>
+
+        <Rewrite name="SPRING_TRANSACTION">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+            <LoggerNameLevelRewritePolicy logger="org.springframework.transaction.interceptor">
+                <KeyValuePair key="TRACE" value="DEBUG"/>
+            </LoggerNameLevelRewritePolicy>
+        </Rewrite>
+
+       <Rewrite name="SPRING_MVC">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+            <LoggerNameLevelRewritePolicy logger="org.springframework.web.servlet.mvc">
+                <KeyValuePair key="TRACE" value="DEBUG"/>
+            </LoggerNameLevelRewritePolicy>
+        </Rewrite>
+
+        <File name="FileSpringWeb" fileName="${sys:logFolder}/${springweb}" append="false">
+            <PatternLayout pattern="%msg%n"/>
+        </File>
+
+    </Appenders>
+
+    <Loggers>
+
+        <logger name="hello" level="${sys:LOG_APP_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </logger>
+
+        <logger name="org.hibernate.SQL" level="${sys:LOG_SQL_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SQL"/>
+        </logger>
+
+        <logger name="org.hibernate.type.descriptor.sql" level="${sys:LOG_SQL_PARAMS_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SQL"/>
+        </logger>
+
+        <logger name="javax.persistence.Entity" level="${sys:LOG_ENTITY_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </logger>
+
+        <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="INFO" additivity="false">
+            <AppenderRef ref="FileSpringWeb"/>
+        </logger>
+
+        <logger name="org.springframework.transaction.support.TransactionSynchronizationManager" level="${sys:LOG_TRANS_SYNC_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <logger name="org.springframework.transaction.interceptor" level="${sys:LOG_TRANS_LEVEL}" additivity="false">
+            <AppenderRef ref="SPRING_TRANSACTION"/>
+        </logger>
+
+        <logger name="org.springframework.web.servlet.mvc" level="${sys:LOG_MVC_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <logger name="org.springframework.web.servlet.handler" level="${sys:LOG_MVC_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <logger name="org.springframework.security" level="${sys:LOG_SECURITY_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <logger name="org.springframework.jdbc.core" level="${sys:LOG_JDBC_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </logger>
+
+        <logger name="org.springframework.data.repository.init" level="${sys:LOG_AUDIT_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </logger>
+
+        <logger name="org.springframework" level="${sys:LOG_SPRING_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <logger name="org.springframework.beans" level="${sys:LOG_BEANS_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <logger name="org.springframework.beans.CachedIntrospectionResults" level="${sys:LOG_BEANS_CACHED_LEVEL}" additivity="false">
+            <AppenderRef ref="CONSOLE_SPRING"/>
+        </logger>
+
+        <!--
+            <logger name="org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer" level="DEBUG" additivity="false">
+                <AppenderRef ref="FileSpringBootDebug"/>
+            </logger>
+
+            <logger name="org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource" level="DEBUG" additivity="false">
+                <AppenderRef ref="FileSpringSelect"/>
+            </logger>
+        -->
+
+        <Root level="WARN">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,64 @@
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'eclipse'
+
+apply plugin: 'org.springframework.boot'
+
+bootRun {
+	jvmArgs = [
+	    "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005",
+	]
+}
+
+bootJar {
+    enabled = true
+}
+
+jar {
+	baseName = 'audit-example'
+	version = '0.0.1-SNAPSHOT'
+}
+
+mainClassName = 'audit.Application'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+    resolutionStrategy {
+        all*.exclude group: 'log4j', module: 'log4j'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        all*.exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+        all*.exclude group: 'ch.qos.logback', module: 'logback-core'
+        all*.exclude group: 'ch.qos.logback', module: 'logback-classic'
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        all*.exclude group: 'org.springframework.boot', module: 'logback-classic'
+        all*.exclude group: 'org.springframework.boot', module: 'logback-core'
+    }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-log4j2')
+    compile('org.springframework.boot:spring-boot-starter-aop')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-devtools")
+    compile("org.springframework.boot:spring-boot-starter-validation")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-devtools")
+    compile('org.springframework.boot:spring-boot-starter-json')
+    compile('org.projectlombok:lombok')
+    compile("com.h2database:h2")
+    compile 'org.slf4j:slf4j-api:1.7.21'
+
+    compile 'org.hibernate:hibernate-envers:5.2.15.Final'
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile group: 'javax.inject', name: 'javax.inject', version: '1'
+    testCompile 'junit:junit:4.12'
+    testCompile 'pl.pragmatists:JUnitParams:1.1.0'
+}
+
