@@ -30,8 +30,8 @@ public class Script {
     private Long id;
 
     @NotNull
-    @Column(name = "TEXT", length = 5000, nullable = false)
-    @Length(min = 1, max = 5000)
+    @Column(name = "TEXT", length = 150000, nullable = false)
+    @Length(min = 1, max = 150000)
     private String text;
 
     @Column(name = "created_date", nullable = false, updatable = false)
